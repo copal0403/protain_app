@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Protein Log</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --sub: #6b7280;
+      --line: #e5e7eb;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --danger: #dc2626;
+      --ok: #059669;
+      --shadow: 0 10px 30px rgba(17,24,39,.08);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .app {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 16px 16px 32px;
+    }
+    h1,h2,h3,p { margin: 0; }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 10px 0 16px;
+    }
+    .title { font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
+    .muted { color: var(--sub); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .summary-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+    .big { font-size: 34px; font-weight: 800; }
+    .goal-chip {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .progress {
+      width: 100%;
+      height: 14px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 10px 0 8px;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #60a5fa, #2563eb);
+      border-radius: 999px;
+      transition: width .25s ease;
+    }
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .mini {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fcfcfd;
+    }
+    .mini .label { font-size: 12px; color: var(--sub); margin-bottom: 4px; }
+    .mini .value { font-size: 20px; font-weight: 800; }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: linear-gradient(var(--bg), var(--bg));
+      padding: 8px 0 4px;
+    }
+    .tab {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tab.active {
+      background: var(--text);
+      color: white;
+      border-color: var(--text);
+    }
+    .hidden { display: none; }
+    form { display: grid; gap: 12px; }
+    .field label {
+      display: block;
+      font-size: 13px;
+      color: var(--sub);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    input, select, button {
+      font: inherit;
+    }
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 13px 14px;
+      background: white;
+    }
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    button.primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: white;
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .entry-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .entry {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      background: white;
+    }
+    .food { font-weight: 700; }
+    .grams { font-weight: 800; }
+    .entry-sub { color: var(--sub); font-size: 13px; margin-top: 4px; }
+    .delete-btn {
+      border: none;
+      background: #fee2e2;
+      color: var(--danger);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .day-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: white;
+      margin-bottom: 12px;
+    }
+    .day-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    .day-title { font-weight: 800; }
+    .day-total {
+      color: var(--ok);
+      font-weight: 800;
+    }
+    .small { font-size: 13px; }
+    .empty {
+      text-align: center;
+      color: var(--sub);
+      padding: 26px 10px;
+    }
+    .install {
+      font-size: 13px;
+      color: var(--sub);
+      line-height: 1.5;
+    }
+    @media (max-width: 600px) {
+      .mini-grid, .row-2 { grid-template-columns: 1fr; }
+      .big { font-size: 30px; }
+      .title { font-size: 24px; }
+      .app { padding: 12px 12px 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="top">
+      <div>
+        <div class="title">Protein Log</div>
+        <div class="muted" id="todayLabel"></div>
+      </div>
+      <button class="secondary" id="exportBtn" type="button">データ書き出し</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="home">ホーム</button>
+      <button class="tab" data-tab="add">記録追加</button>
+      <button class="tab" data-tab="history">履歴</button>
+      <button class="tab" data-tab="settings">設定</button>
+    </div>
+
+    <section id="home" class="tab-panel">
+      <div class="card">
+        <div class="summary-row">
+          <div>
+            <div class="muted">今日の合計</div>
+            <div class="big"><span id="todayTotal">0</span>g</div>
+          </div>
+          <div class="goal-chip">目標 <span id="goalValue">80</span>g</div>
+        </div>
+        <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="muted small" id="progressText">0%</div>
+
+        <div class="mini-grid">
+          <div class="mini">
+            <div class="label">残り</div>
+            <div class="value"><span id="remainingValue">80</span>g</div>
+          </div>
+          <div class="mini">
+            <div class="label">件数</div>
+            <div class="value" id="countValue">0</div>
+          </div>
+          <div class="mini">
+            <div class="label">平均</div>
+            <div class="value"><span id="avgValue">0</span>g</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>今日の記録</h3>
+        <div id="todayEntries" class="entry-list"></div>
+      </div>
+
+      <div class="card install">
+        iPhoneではSafariで開いて共有ボタンから「ホーム画面に追加」を使うと、アプリっぽく使えます。
+      </div>
+    </section>
+
+    <section id="add" class="tab-panel hidden">
+      <div class="card">
+        <h3 style="margin-bottom: 12px;">記録を追加</h3>
+        <form id="entryForm">
+          <div class="field">
+            <label for="foodName">食べ物</label>
+            <input id="foodName" type="text" placeholder="例: サラダチキン" required />
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label for="proteinGrams">たんぱく質量 (g)</label>
+              <input id="proteinGrams" type="number" min="0" step="0.1" placeholder="例: 24" required />
+            </div>
+            <div class="field">
+              <label for="entryDate">日付</label>
+              <input id="entryDate" type="date" required />
+            </div>
+          </div>
+          <button class="primary" type="submit">保存</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="history" class="tab-panel hidden">
+      <div class="card">
+        <h3 style="margin-bottom: 12px;">履歴</h3>
+        <div id="historyList"></div>
+      </div>
+    </section>
+
+    <section id="settings" class="tab-panel hidden">
+      <div class="card">
+        <h3 style="margin-bottom: 12px;">設定</h3>
+        <form id="settingsForm">
+          <div class="field">
+            <label for="dailyGoal">1日の摂取目標 (g)</label>
+            <input id="dailyGoal" type="number" min="1" step="1" placeholder="80" required />
+          </div>
+          <button class="primary" type="submit">保存</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom: 12px;">データ管理</h3>
+        <div style="display:grid; gap:10px;">
+          <button id="importBtn" class="secondary" type="button">データ読み込み</button>
+          <input id="importFile" type="file" accept="application/json" class="hidden" />
+          <button id="clearBtn" class="secondary" type="button">全データ削除</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "protein-log-app-v1";
+
+    const state = loadState();
+
+    const todayLabel = document.getElementById("todayLabel");
+    const todayTotalEl = document.getElementById("todayTotal");
+    const goalValueEl = document.getElementById("goalValue");
+    const remainingValueEl = document.getElementById("remainingValue");
+    const countValueEl = document.getElementById("countValue");
+    const avgValueEl = document.getElementById("avgValue");
+    const progressBarEl = document.getElementById("progressBar");
+    const progressTextEl = document.getElementById("progressText");
+    const todayEntriesEl = document.getElementById("todayEntries");
+    const historyListEl = document.getElementById("historyList");
+
+    const entryForm = document.getElementById("entryForm");
+    const foodNameInput = document.getElementById("foodName");
+    const proteinGramsInput = document.getElementById("proteinGrams");
+    const entryDateInput = document.getElementById("entryDate");
+
+    const settingsForm = document.getElementById("settingsForm");
+    const dailyGoalInput = document.getElementById("dailyGoal");
+
+    document.getElementById("exportBtn").addEventListener("click", exportData);
+    document.getElementById("importBtn").addEventListener("click", () => document.getElementById("importFile").click());
+    document.getElementById("importFile").addEventListener("change", importData);
+    document.getElementById("clearBtn").addEventListener("click", clearAllData);
+
+    document.querySelectorAll(".tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+        document.querySelectorAll(".tab-panel").forEach(x => x.classList.add("hidden"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.remove("hidden");
+      });
+    });
+
+    entryForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const food = foodNameInput.value.trim();
+      const grams = Number(proteinGramsInput.value);
+      const date = entryDateInput.value;
+
+      if (!food || !date || Number.isNaN(grams) || grams < 0) return;
+
+      state.entries.push({
+        id: crypto.randomUUID(),
+        food,
+        grams,
+        date,
+        createdAt: new Date().toISOString()
+      });
+
+      saveState();
+      entryForm.reset();
+      entryDateInput.value = todayISO();
+      render();
+      openTab("home");
+    });
+
+    settingsForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const goal = Number(dailyGoalInput.value);
+      if (Number.isNaN(goal) || goal <= 0) return;
+      state.dailyGoal = goal;
+      saveState();
+      render();
+      openTab("home");
+    });
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return { dailyGoal: 80, entries: [] };
+        const parsed = JSON.parse(raw);
+        return {
+          dailyGoal: Number(parsed.dailyGoal) > 0 ? Number(parsed.dailyGoal) : 80,
+          entries: Array.isArray(parsed.entries) ? parsed.entries : []
+        };
+      } catch {
+        return { dailyGoal: 80, entries: [] };
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function todayISO() {
+      const now = new Date();
+      const tz = now.getTimezoneOffset();
+      const local = new Date(now.getTime() - tz * 60000);
+      return local.toISOString().slice(0, 10);
+    }
+
+    function formatDate(dateString) {
+      const d = new Date(dateString + "T00:00:00");
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric", month: "long", day: "numeric", weekday: "short"
+      }).format(d);
+    }
+
+    function entriesForDate(dateStr) {
+      return state.entries
+        .filter(e => e.date === dateStr)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+
+    function totalForDate(dateStr) {
+      return entriesForDate(dateStr).reduce((sum, e) => sum + Number(e.grams), 0);
+    }
+
+    function render() {
+      const today = todayISO();
+      todayLabel.textContent = formatDate(today);
+      entryDateInput.value = today;
+      dailyGoalInput.value = state.dailyGoal;
+
+      const todayEntries = entriesForDate(today);
+      const todayTotal = todayEntries.reduce((sum, e) => sum + Number(e.grams), 0);
+      const count = todayEntries.length;
+      const avg = count ? todayTotal / count : 0;
+      const goal = state.dailyGoal;
+      const percent = Math.min((todayTotal / goal) * 100, 100);
+      const remaining = Math.max(goal - todayTotal, 0);
+
+      todayTotalEl.textContent = trimNumber(todayTotal);
+      goalValueEl.textContent = trimNumber(goal);
+      remainingValueEl.textContent = trimNumber(remaining);
+      countValueEl.textContent = String(count);
+      avgValueEl.textContent = trimNumber(avg);
+      progressBarEl.style.width = percent + "%";
+      progressTextEl.textContent = `${Math.round((todayTotal / goal) * 100)}% 達成`;
+
+      renderTodayEntries(todayEntries);
+      renderHistory();
+    }
+
+    function trimNumber(n) {
+      return Number.isInteger(n) ? String(n) : n.toFixed(1).replace(/\.0$/, "");
+    }
+
+    function renderTodayEntries(entries) {
+      if (!entries.length) {
+        todayEntriesEl.innerHTML = '<div class="empty">まだ記録がありません</div>';
+        return;
+      }
+      todayEntriesEl.innerHTML = entries.map(e => `
+        <div class="entry">
+          <div>
+            <div class="food">${escapeHtml(e.food)}</div>
+            <div class="entry-sub">${formatDate(e.date)}</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="grams">${trimNumber(Number(e.grams))}g</div>
+            <button class="delete-btn" onclick="deleteEntry('${e.id}')">削除</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderHistory() {
+      if (!state.entries.length) {
+        historyListEl.innerHTML = '<div class="empty">履歴がありません</div>';
+        return;
+      }
+
+      const groups = {};
+      for (const entry of state.entries) {
+        if (!groups[entry.date]) groups[entry.date] = [];
+        groups[entry.date].push(entry);
+      }
+
+      const dates = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
+      historyListEl.innerHTML = dates.map(date => {
+        const dayEntries = groups[date].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const total = dayEntries.reduce((sum, e) => sum + Number(e.grams), 0);
+        return `
+          <div class="day-card">
+            <div class="day-head">
+              <div class="day-title">${formatDate(date)}</div>
+              <div class="day-total">合計 ${trimNumber(total)}g</div>
+            </div>
+            <div class="entry-list">
+              ${dayEntries.map(e => `
+                <div class="entry">
+                  <div>
+                    <div class="food">${escapeHtml(e.food)}</div>
+                    <div class="entry-sub">${trimNumber(Number(e.grams))}g</div>
+                  </div>
+                  <button class="delete-btn" onclick="deleteEntry('${e.id}')">削除</button>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function deleteEntry(id) {
+      const ok = confirm("この記録を削除しますか？");
+      if (!ok) return;
+      const idx = state.entries.findIndex(e => e.id === id);
+      if (idx >= 0) {
+        state.entries.splice(idx, 1);
+        saveState();
+        render();
+      }
+    }
+    window.deleteEntry = deleteEntry;
+
+    function clearAllData() {
+      const ok = confirm("すべての記録と設定を削除します。よろしいですか？");
+      if (!ok) return;
+      state.entries = [];
+      state.dailyGoal = 80;
+      saveState();
+      render();
+      openTab("home");
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `protein-log-backup-${todayISO()}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          if (!Array.isArray(data.entries)) throw new Error();
+          state.entries = data.entries.map(e => ({
+            id: e.id || crypto.randomUUID(),
+            food: String(e.food || ""),
+            grams: Number(e.grams || 0),
+            date: String(e.date || todayISO()),
+            createdAt: e.createdAt || new Date().toISOString()
+          }));
+          state.dailyGoal = Number(data.dailyGoal) > 0 ? Number(data.dailyGoal) : 80;
+          saveState();
+          render();
+          alert("読み込みました。");
+        } catch {
+          alert("読み込みに失敗しました。JSONファイルを確認してください。");
+        } finally {
+          event.target.value = "";
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function openTab(name) {
+      document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x.dataset.tab === name));
+      document.querySelectorAll(".tab-panel").forEach(x => x.classList.toggle("hidden", x.id !== name));
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    render();
+  </script>
+</body>
+</html>
