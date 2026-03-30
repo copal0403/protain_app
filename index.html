@@ -15,7 +15,11 @@
       --accent: #2563eb;
       --accent-soft: #dbeafe;
       --danger: #dc2626;
+      --danger-soft: #fee2e2;
       --ok: #059669;
+      --ok-soft: #d1fae5;
+      --warn: #d97706;
+      --warn-soft: #fef3c7;
       --shadow: 0 10px 30px rgba(17,24,39,.08);
       --radius: 18px;
     }
@@ -65,20 +69,45 @@
       font-weight: 700;
       white-space: nowrap;
     }
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .status-chip {
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .status-chip.ok {
+      background: var(--ok-soft);
+      color: var(--ok);
+    }
+    .status-chip.ng {
+      background: var(--warn-soft);
+      color: var(--warn);
+    }
     .progress {
       width: 100%;
-      height: 14px;
+      height: 16px;
       background: #e5e7eb;
       border-radius: 999px;
       overflow: hidden;
-      margin: 10px 0 8px;
+      margin: 12px 0 8px;
     }
     .progress-bar {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #60a5fa, #2563eb);
+      background: linear-gradient(90deg, #93c5fd, #2563eb);
       border-radius: 999px;
-      transition: width .25s ease;
+      transition: width .25s ease, background .25s ease;
+    }
+    .progress-bar.ok {
+      background: linear-gradient(90deg, #6ee7b7, #059669);
     }
     .mini-grid {
       display: grid;
@@ -103,6 +132,7 @@
       z-index: 2;
       background: linear-gradient(var(--bg), var(--bg));
       padding: 8px 0 4px;
+      overflow-x: auto;
     }
     .tab {
       border: 1px solid var(--line);
@@ -111,6 +141,7 @@
       padding: 10px 14px;
       font-weight: 700;
       cursor: pointer;
+      white-space: nowrap;
     }
     .tab.active {
       background: var(--text);
@@ -126,10 +157,8 @@
       margin-bottom: 6px;
       font-weight: 700;
     }
-    input, select, button {
-      font: inherit;
-    }
-    input {
+    input, select, button { font: inherit; }
+    input, select {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 14px;
@@ -174,17 +203,30 @@
       align-items: center;
       background: white;
     }
+    .entry-actions {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
     .food { font-weight: 700; }
     .grams { font-weight: 800; }
     .entry-sub { color: var(--sub); font-size: 13px; margin-top: 4px; }
-    .delete-btn {
+    .delete-btn, .copy-btn {
       border: none;
-      background: #fee2e2;
-      color: var(--danger);
       border-radius: 10px;
       padding: 8px 10px;
       font-weight: 700;
       cursor: pointer;
+    }
+    .delete-btn {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+    .copy-btn {
+      background: var(--accent-soft);
+      color: var(--accent);
     }
     .day-card {
       border: 1px solid var(--line);
@@ -199,12 +241,14 @@
       gap: 8px;
       margin-bottom: 10px;
       align-items: center;
+      flex-wrap: wrap;
     }
     .day-title { font-weight: 800; }
     .day-total {
-      color: var(--ok);
       font-weight: 800;
     }
+    .day-total.ok { color: var(--ok); }
+    .day-total.ng { color: var(--warn); }
     .small { font-size: 13px; }
     .empty {
       text-align: center;
@@ -216,11 +260,67 @@
       color: var(--sub);
       line-height: 1.5;
     }
+    .chart-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .range-btn {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .range-btn.active {
+      background: var(--text);
+      color: white;
+      border-color: var(--text);
+    }
+    .chart-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+    .chart-box {
+      min-width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      padding: 12px 12px 8px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 280px;
+    }
+    .legend {
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:10px;
+      color: var(--sub);
+      font-size: 13px;
+    }
+    .legend-item { display:flex; align-items:center; gap:6px; }
+    .dot {
+      width: 10px; height: 10px; border-radius: 999px;
+      display:inline-block;
+    }
+    .dot.ok { background: #059669; }
+    .dot.ng { background: #2563eb; }
+    .line-sample {
+      width: 18px; height: 0; border-top: 2px dashed #d97706; display:inline-block;
+    }
     @media (max-width: 600px) {
       .mini-grid, .row-2 { grid-template-columns: 1fr; }
       .big { font-size: 30px; }
       .title { font-size: 24px; }
       .app { padding: 12px 12px 28px; }
+      canvas { height: 240px; }
+      .entry { grid-template-columns: 1fr; }
+      .entry-actions { justify-content: flex-start; }
     }
   </style>
 </head>
@@ -238,6 +338,7 @@
       <button class="tab active" data-tab="home">ホーム</button>
       <button class="tab" data-tab="add">記録追加</button>
       <button class="tab" data-tab="history">履歴</button>
+      <button class="tab" data-tab="chart">グラフ</button>
       <button class="tab" data-tab="settings">設定</button>
     </div>
 
@@ -250,8 +351,14 @@
           </div>
           <div class="goal-chip">目標 <span id="goalValue">80</span>g</div>
         </div>
+
+        <div class="status-row">
+          <div class="status-chip ng" id="statusChip">未達成</div>
+          <div class="muted small" id="statusDetail">あと80gで達成</div>
+        </div>
+
         <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-        <div class="muted small" id="progressText">0%</div>
+        <div class="muted small" id="progressText">0% 達成</div>
 
         <div class="mini-grid">
           <div class="mini">
@@ -309,6 +416,29 @@
       </div>
     </section>
 
+    <section id="chart" class="tab-panel hidden">
+      <div class="card">
+        <h3 style="margin-bottom: 12px;">摂取量グラフ</h3>
+        <div class="chart-toolbar" id="chartRangeToolbar">
+          <button type="button" class="range-btn active" data-range="7">7日</button>
+          <button type="button" class="range-btn" data-range="14">14日</button>
+          <button type="button" class="range-btn" data-range="30">30日</button>
+          <button type="button" class="range-btn" data-range="all">全期間</button>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-box">
+            <canvas id="chartCanvas" width="700" height="280"></canvas>
+          </div>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><span class="dot ok"></span> 目標達成日</div>
+          <div class="legend-item"><span class="dot ng"></span> 未達成日</div>
+          <div class="legend-item"><span class="line-sample"></span> 目標ライン</div>
+        </div>
+        <div class="muted small" id="chartSummary" style="margin-top:10px;"></div>
+      </div>
+    </section>
+
     <section id="settings" class="tab-panel hidden">
       <div class="card">
         <h3 style="margin-bottom: 12px;">設定</h3>
@@ -333,9 +463,11 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "protein-log-app-v1";
+    const STORAGE_KEY = "protein-log-app-v2";
+    const LEGACY_STORAGE_KEY = "protein-log-app-v1";
 
     const state = loadState();
+    let selectedChartRange = "7";
 
     const todayLabel = document.getElementById("todayLabel");
     const todayTotalEl = document.getElementById("todayTotal");
@@ -347,6 +479,10 @@
     const progressTextEl = document.getElementById("progressText");
     const todayEntriesEl = document.getElementById("todayEntries");
     const historyListEl = document.getElementById("historyList");
+    const statusChipEl = document.getElementById("statusChip");
+    const statusDetailEl = document.getElementById("statusDetail");
+    const chartCanvas = document.getElementById("chartCanvas");
+    const chartSummaryEl = document.getElementById("chartSummary");
 
     const entryForm = document.getElementById("entryForm");
     const foodNameInput = document.getElementById("foodName");
@@ -362,11 +498,14 @@
     document.getElementById("clearBtn").addEventListener("click", clearAllData);
 
     document.querySelectorAll(".tab").forEach(btn => {
+      btn.addEventListener("click", () => openTab(btn.dataset.tab));
+    });
+
+    document.querySelectorAll(".range-btn").forEach(btn => {
       btn.addEventListener("click", () => {
-        document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
-        document.querySelectorAll(".tab-panel").forEach(x => x.classList.add("hidden"));
-        btn.classList.add("active");
-        document.getElementById(btn.dataset.tab).classList.remove("hidden");
+        selectedChartRange = btn.dataset.range;
+        document.querySelectorAll(".range-btn").forEach(x => x.classList.toggle("active", x.dataset.range === selectedChartRange));
+        renderChart();
       });
     });
 
@@ -375,7 +514,6 @@
       const food = foodNameInput.value.trim();
       const grams = Number(proteinGramsInput.value);
       const date = entryDateInput.value;
-
       if (!food || !date || Number.isNaN(grams) || grams < 0) return;
 
       state.entries.push({
@@ -405,16 +543,27 @@
 
     function loadState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
         if (!raw) return { dailyGoal: 80, entries: [] };
         const parsed = JSON.parse(raw);
         return {
           dailyGoal: Number(parsed.dailyGoal) > 0 ? Number(parsed.dailyGoal) : 80,
-          entries: Array.isArray(parsed.entries) ? parsed.entries : []
+          entries: Array.isArray(parsed.entries) ? parsed.entries.map(normalizeEntry).filter(Boolean) : []
         };
       } catch {
         return { dailyGoal: 80, entries: [] };
       }
+    }
+
+    function normalizeEntry(e) {
+      if (!e) return null;
+      return {
+        id: e.id || crypto.randomUUID(),
+        food: String(e.food || ""),
+        grams: Number(e.grams || 0),
+        date: String(e.date || todayISO()),
+        createdAt: e.createdAt || new Date().toISOString()
+      };
     }
 
     function saveState() {
@@ -435,6 +584,11 @@
       }).format(d);
     }
 
+    function shortDate(dateString) {
+      const d = new Date(dateString + "T00:00:00");
+      return new Intl.DateTimeFormat("ja-JP", { month: "numeric", day: "numeric" }).format(d);
+    }
+
     function entriesForDate(dateStr) {
       return state.entries
         .filter(e => e.date === dateStr)
@@ -443,6 +597,39 @@
 
     function totalForDate(dateStr) {
       return entriesForDate(dateStr).reduce((sum, e) => sum + Number(e.grams), 0);
+    }
+
+    function getAllDatesSortedAsc() {
+      const dates = [...new Set(state.entries.map(e => e.date))].sort((a, b) => a.localeCompare(b));
+      return dates;
+    }
+
+    function getChartData() {
+      const allDates = getAllDatesSortedAsc();
+      if (!allDates.length) return [];
+      let dates = allDates;
+      if (selectedChartRange !== "all") {
+        const n = Number(selectedChartRange);
+        const end = new Date(todayISO() + "T00:00:00");
+        dates = [];
+        for (let i = n - 1; i >= 0; i--) {
+          const d = new Date(end);
+          d.setDate(d.getDate() - i);
+          dates.push(toISODateLocal(d));
+        }
+      }
+      return dates.map(date => ({
+        date,
+        total: totalForDate(date),
+        achieved: totalForDate(date) >= state.dailyGoal
+      }));
+    }
+
+    function toISODateLocal(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
     }
 
     function render() {
@@ -456,8 +643,10 @@
       const count = todayEntries.length;
       const avg = count ? todayTotal / count : 0;
       const goal = state.dailyGoal;
-      const percent = Math.min((todayTotal / goal) * 100, 100);
+      const ratio = goal > 0 ? todayTotal / goal : 0;
+      const percent = Math.min(ratio * 100, 100);
       const remaining = Math.max(goal - todayTotal, 0);
+      const achieved = todayTotal >= goal;
 
       todayTotalEl.textContent = trimNumber(todayTotal);
       goalValueEl.textContent = trimNumber(goal);
@@ -465,14 +654,22 @@
       countValueEl.textContent = String(count);
       avgValueEl.textContent = trimNumber(avg);
       progressBarEl.style.width = percent + "%";
-      progressTextEl.textContent = `${Math.round((todayTotal / goal) * 100)}% 達成`;
+      progressBarEl.classList.toggle("ok", achieved);
+      progressTextEl.textContent = `${Math.round(ratio * 100)}% 達成`;
+
+      statusChipEl.textContent = achieved ? "達成" : "未達成";
+      statusChipEl.className = `status-chip ${achieved ? "ok" : "ng"}`;
+      statusDetailEl.textContent = achieved
+        ? `目標を ${trimNumber(todayTotal - goal)}g 上回っています`
+        : `あと${trimNumber(remaining)}gで達成`;
 
       renderTodayEntries(todayEntries);
       renderHistory();
+      renderChart();
     }
 
     function trimNumber(n) {
-      return Number.isInteger(n) ? String(n) : n.toFixed(1).replace(/\.0$/, "");
+      return Number.isInteger(n) ? String(n) : Number(n).toFixed(1).replace(/\.0$/, "");
     }
 
     function renderTodayEntries(entries) {
@@ -486,7 +683,7 @@
             <div class="food">${escapeHtml(e.food)}</div>
             <div class="entry-sub">${formatDate(e.date)}</div>
           </div>
-          <div style="display:flex; align-items:center; gap:8px;">
+          <div class="entry-actions">
             <div class="grams">${trimNumber(Number(e.grams))}g</div>
             <button class="delete-btn" onclick="deleteEntry('${e.id}')">削除</button>
           </div>
@@ -511,11 +708,12 @@
       historyListEl.innerHTML = dates.map(date => {
         const dayEntries = groups[date].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         const total = dayEntries.reduce((sum, e) => sum + Number(e.grams), 0);
+        const achieved = total >= state.dailyGoal;
         return `
           <div class="day-card">
             <div class="day-head">
               <div class="day-title">${formatDate(date)}</div>
-              <div class="day-total">合計 ${trimNumber(total)}g</div>
+              <div class="day-total ${achieved ? "ok" : "ng"}">合計 ${trimNumber(total)}g ${achieved ? "・達成" : "・未達成"}</div>
             </div>
             <div class="entry-list">
               ${dayEntries.map(e => `
@@ -524,13 +722,120 @@
                     <div class="food">${escapeHtml(e.food)}</div>
                     <div class="entry-sub">${trimNumber(Number(e.grams))}g</div>
                   </div>
-                  <button class="delete-btn" onclick="deleteEntry('${e.id}')">削除</button>
+                  <div class="entry-actions">
+                    <button class="copy-btn" onclick="copyEntryToToday('${e.id}')">今日に追加</button>
+                    <button class="delete-btn" onclick="deleteEntry('${e.id}')">削除</button>
+                  </div>
                 </div>
               `).join("")}
             </div>
           </div>
         `;
       }).join("");
+    }
+
+    function renderChart() {
+      const data = getChartData();
+      const ctx = chartCanvas.getContext("2d");
+      const dpr = window.devicePixelRatio || 1;
+      const parentWidth = chartCanvas.parentElement.clientWidth;
+      const computedWidth = Math.max(parentWidth, data.length * 52, 320);
+      const cssHeight = window.innerWidth <= 600 ? 240 : 280;
+      chartCanvas.style.width = computedWidth + "px";
+      chartCanvas.style.height = cssHeight + "px";
+      chartCanvas.width = Math.floor(computedWidth * dpr);
+      chartCanvas.height = Math.floor(cssHeight * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, computedWidth, cssHeight);
+
+      if (!data.length) {
+        ctx.fillStyle = "#6b7280";
+        ctx.font = "14px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("グラフ表示用のデータがありません", computedWidth / 2, cssHeight / 2);
+        chartSummaryEl.textContent = "まだ記録がないため、グラフは表示されません。";
+        return;
+      }
+
+      const goal = state.dailyGoal;
+      const maxValue = Math.max(goal, ...data.map(d => d.total), 10);
+      const topPad = 20;
+      const bottomPad = 42;
+      const leftPad = 36;
+      const rightPad = 12;
+      const plotWidth = computedWidth - leftPad - rightPad;
+      const plotHeight = cssHeight - topPad - bottomPad;
+      const barWidth = Math.max(18, Math.min(34, plotWidth / Math.max(data.length, 1) * 0.56));
+      const stepX = plotWidth / Math.max(data.length, 1);
+
+      ctx.strokeStyle = "#e5e7eb";
+      ctx.lineWidth = 1;
+      ctx.font = "12px sans-serif";
+      ctx.fillStyle = "#6b7280";
+      ctx.textAlign = "right";
+
+      const tickCount = 4;
+      for (let i = 0; i <= tickCount; i++) {
+        const value = maxValue / tickCount * i;
+        const y = topPad + plotHeight - (value / maxValue) * plotHeight;
+        ctx.beginPath();
+        ctx.moveTo(leftPad, y);
+        ctx.lineTo(computedWidth - rightPad, y);
+        ctx.stroke();
+        ctx.fillText(trimNumber(value), leftPad - 6, y + 4);
+      }
+
+      const goalY = topPad + plotHeight - (goal / maxValue) * plotHeight;
+      ctx.setLineDash([6, 5]);
+      ctx.strokeStyle = "#d97706";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(leftPad, goalY);
+      ctx.lineTo(computedWidth - rightPad, goalY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#d97706";
+      ctx.textAlign = "left";
+      ctx.fillText(`目標 ${trimNumber(goal)}g`, leftPad + 6, Math.max(14, goalY - 6));
+
+      data.forEach((item, i) => {
+        const xCenter = leftPad + stepX * i + stepX / 2;
+        const h = (item.total / maxValue) * plotHeight;
+        const x = xCenter - barWidth / 2;
+        const y = topPad + plotHeight - h;
+
+        ctx.fillStyle = item.achieved ? "#059669" : "#2563eb";
+        ctx.beginPath();
+        const radius = 8;
+        roundRect(ctx, x, y, barWidth, h, radius);
+        ctx.fill();
+
+        ctx.fillStyle = "#374151";
+        ctx.font = "11px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(trimNumber(item.total), xCenter, Math.max(12, y - 6));
+        ctx.fillStyle = "#6b7280";
+        ctx.fillText(shortDate(item.date), xCenter, cssHeight - 16);
+      });
+
+      const achievedCount = data.filter(d => d.achieved).length;
+      chartSummaryEl.textContent = `${labelForRange(selectedChartRange)}で ${achievedCount}/${data.length} 日が目標達成です。`;
+    }
+
+    function labelForRange(range) {
+      if (range === "all") return "全期間";
+      return `直近${range}日`;
+    }
+
+    function roundRect(ctx, x, y, width, height, radius) {
+      const r = Math.min(radius, width / 2, height / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + width, y, x + width, y + height, r);
+      ctx.arcTo(x + width, y + height, x, y + height, r);
+      ctx.arcTo(x, y + height, x, y, r);
+      ctx.arcTo(x, y, x + width, y, r);
+      ctx.closePath();
     }
 
     function deleteEntry(id) {
@@ -544,6 +849,22 @@
       }
     }
     window.deleteEntry = deleteEntry;
+
+    function copyEntryToToday(id) {
+      const source = state.entries.find(e => e.id === id);
+      if (!source) return;
+      state.entries.push({
+        id: crypto.randomUUID(),
+        food: source.food,
+        grams: Number(source.grams),
+        date: todayISO(),
+        createdAt: new Date().toISOString()
+      });
+      saveState();
+      render();
+      alert("今日の日付で追加しました。");
+    }
+    window.copyEntryToToday = copyEntryToToday;
 
     function clearAllData() {
       const ok = confirm("すべての記録と設定を削除します。よろしいですか？");
@@ -572,13 +893,7 @@
         try {
           const data = JSON.parse(reader.result);
           if (!Array.isArray(data.entries)) throw new Error();
-          state.entries = data.entries.map(e => ({
-            id: e.id || crypto.randomUUID(),
-            food: String(e.food || ""),
-            grams: Number(e.grams || 0),
-            date: String(e.date || todayISO()),
-            createdAt: e.createdAt || new Date().toISOString()
-          }));
+          state.entries = data.entries.map(normalizeEntry).filter(Boolean);
           state.dailyGoal = Number(data.dailyGoal) > 0 ? Number(data.dailyGoal) : 80;
           saveState();
           render();
@@ -595,6 +910,9 @@
     function openTab(name) {
       document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x.dataset.tab === name));
       document.querySelectorAll(".tab-panel").forEach(x => x.classList.toggle("hidden", x.id !== name));
+      if (name === "chart") {
+        requestAnimationFrame(renderChart);
+      }
     }
 
     function escapeHtml(str) {
@@ -605,6 +923,10 @@
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
     }
+
+    window.addEventListener("resize", () => {
+      renderChart();
+    });
 
     render();
   </script>
